@@ -1,5 +1,6 @@
 (defproject cljs-io "1.2.3"
   :plugins [[lein-cljsbuild "1.0.0"]]
+  :dependencies [[org.clojure/clojurescript "0.0-2067"]]
   :cljsbuild {
     :builds [{
         ; The path to the top-level ClojureScript source directory:
