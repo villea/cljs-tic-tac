@@ -17,7 +17,12 @@
 
 (def moves (atom #{}))
 
-(def current-color (atom (cycle ["red" "brown"])))
+(def current-turn (atom \X))
+
+(defn change-turn [c]
+	(if (= c \X)
+		\O
+		\X))
 
 (defn draw-rect [context color x y w h] 
    (doto context
@@ -50,13 +55,18 @@
 	[ (js/Math.floor (/ (get xy 0) cell-width))
 	  (js/Math.floor (/ (get xy 1) cell-height)) ])
 
-(defn paint-cell [x y]
-	(draw-rect context "green" (* x cell-width) (* y cell-height) (- cell-width 1) (- cell-height 1)))
+(defn paint-cell [color x y]
+	(let [x-pos (* x cell-width)
+		  y-pos (* y cell-height)]
+    (draw-rect context "white" x-pos y-pos (- cell-width 1) (- cell-height 1))
+	(aset context "fillStyle" "black")
+	(aset context "font" "bold 20px sans-serif")
+	(.fillText context color (+ x-pos (/ cell-width 2)) (+ y-pos (/ cell-height 2)))))
 
-(.addEventListener canvas "click" (fn [event]
+(.addEventListener canvas "mousedown" (fn [event]
     (let [[mx my] (coord-to-cell (mouse-pos canvas event))]
-	  (paint-cell mx my)
+	  (paint-cell @current-turn mx my) 
 	  (swap! moves conj [mx my])
-	  (.log js/console (str @current-color))
+	  (swap! current-turn change-turn)
 	  (.log js/console (str @moves)))))
 
