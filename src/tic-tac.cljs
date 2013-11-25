@@ -15,7 +15,7 @@
 
 (def context (.getContext canvas "2d"))
 
-(def moves (atom #{}))
+(def moves (atom {}))
 
 (def current-turn (atom \X))
 
@@ -58,15 +58,17 @@
 (defn paint-cell [color x y]
 	(let [x-pos (* x cell-width)
 		  y-pos (* y cell-height)]
-    (draw-rect context "white" x-pos y-pos (- cell-width 1) (- cell-height 1))
+    (draw-rect context "white" (+ x-pos 3) (+ y-pos 3) (- cell-width 3) (- cell-height 3))
 	(aset context "fillStyle" "black")
+	(aset context "textAlign" "center")
+	(aset context "textBaseline" "middle")
 	(aset context "font" "bold 20px sans-serif")
 	(.fillText context color (+ x-pos (/ cell-width 2)) (+ y-pos (/ cell-height 2)))))
 
 (.addEventListener canvas "mousedown" (fn [event]
     (let [[mx my] (coord-to-cell (mouse-pos canvas event))]
 	  (paint-cell @current-turn mx my) 
-	  (swap! moves conj [mx my])
+	  (swap! moves assoc [mx my] @current-turn)
 	  (swap! current-turn change-turn)
 	  (.log js/console (str @moves)))))
 
